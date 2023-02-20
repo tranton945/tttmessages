@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "977662063355",
+    "project_id": "tttmessages-df7f3",
+    "storage_bucket": "tttmessages-df7f3.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:977662063355:android:2a8ddd4cc147df497f765e",
+        "android_client_info": {
+          "package_name": "com.tttmessages"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "977662063355-0pdov2u6k1caoubk207p5nqdisnf3s9o.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAbfQin7r2ZRxYxIza7xObg_b6tyqYV6v4"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "977662063355-0pdov2u6k1caoubk207p5nqdisnf3s9o.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
