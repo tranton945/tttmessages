@@ -30,6 +30,8 @@ import { async } from '@firebase/util';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useNavigation } from '@react-navigation/native';
 
+import { getFCMToken, notificationListener, background } from '../../utilities/pushNotifications';
+
 const ChatScreen = props => {
   const [friendList, setFriendList] = useState([]);
 
@@ -81,7 +83,6 @@ const ChatScreen = props => {
       }
     })
   }, [])
-
   
   const [searchHandler, setSearchHandler] = useState(false)
   // list of items to search
@@ -98,6 +99,7 @@ const ChatScreen = props => {
         rightIconName="search"
         onPressLeftIconName={() => {
           alert('leftIconName')
+          // getFCMToken()
         }}
         // click search btn change searchHandler => true
         // UIHeader will be display search box

@@ -29,7 +29,7 @@ const UIHeader = (props) => {
     const [userList, setUserList] = useState([])
 
     useEffect(() => {
-        console.log('=====================UIHeader===============')
+        // console.log('=====================UIHeader===============')
 
         if (searchHandler == false) {
             setSearchTxt('')

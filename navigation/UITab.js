@@ -13,11 +13,21 @@ import {
 
 import { NavigationContainer } from '@react-navigation/native';
 import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
+import { useEffect } from 'react';
+import { getFCMToken, notificationListener, background} from '../utilities/pushNotifications';
 
 const Tab = createBottomTabNavigator();
 
+
 const UITab = (props) => {
     // const {url, userId, name, email} = props.route.params.theUser;
+    useEffect(()=>{
+        getFCMToken()
+        notificationListener()
+        background(props)
+        // console.log(props)
+      })
+
     return(
         <Tab.Navigator >
             <Tab.Screen options={{

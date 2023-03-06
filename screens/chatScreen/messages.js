@@ -37,9 +37,12 @@ import {
   firebaseSet,
   firebasePush,
   firebaseOnValue,
+  firebaseOnChildAdded,
 } from '../../firebase/firebase'
+
 import { FlatList, Switch } from 'react-native-gesture-handler';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { onNewMessage, handleBackgroundMessage, background } from '../../utilities/pushNotifications';
 
 const Messages = props => {
   const [txt, setTxt] = useState('')
@@ -50,13 +53,14 @@ const Messages = props => {
   const [checkFriend, setCheckFriend] = useState(isFriend);
   // save photo or video here 
   const [filePath, setFilePath] = useState({});
+  // const [keyService, setKeyService] = useState('AAAA46EzMvs:APA91bHqVera_UuRA4-NN4RGHbLeKMgfL0_-yAN4pfT-_k1r7QujXcG168C3nSeQc_j0cziQM1ncNTqFkPfdrPEnCnuS-JH9SnX-Wdu4cY9YqSRy2PBJMYBpyi5LUP3h7Cn8ijd0RYBm');
 
   // get data from userChat when choose user
   const { 
     url, 
     userId, 
     name, 
-    message, 
+    // message, 
     unReadMessage,
     isFriend  } = props.route.params.userList;
    
@@ -87,6 +91,18 @@ const Messages = props => {
         return      
       }
     }
+    // console.log(props.route.params.userList)
+    const mydataTxt = await AsyncStorage.getItem("userData")
+    const userData = JSON.parse(mydataTxt)
+    const user = {
+      name: userData.info.displayName,
+      url: userData.info.photoURL,
+      message: "fake message",
+      email: userData.info.email,
+      unReadMessage: 0,
+      userId: myUid,
+      isFriend: isFriend,
+    }
     const imgUrl = photoMessageURL === undefined ? '': photoMessageURL
 
     // get friendUID with props
@@ -100,21 +116,25 @@ const Messages = props => {
       imgMessage: imgUrl,
       timestamp: (new Date()).getTime(),
     }
+
+    // onNewMessage(friendUID, myUid, user, sendMessage)
+    // return
     // send message to firebase wiht id = myUID-friendUID 
     // user firebasePush to send message
-    if (keyFriendAndMe === null || keyFriendAndMe === undefined) {
-      firebasePush(firebaseRef(firebaseDatabase, `chats/${myUid}-${friendUID}/`), sendMessage)
-        .then(() => {
-          setTxt('')
-          console.log('send message successfully')
-          handleNewMessage
-        })
-    } else {
+    if (keyFriendAndMe !== null && keyFriendAndMe !== undefined) {
+      // console.log('send message successfully')
       firebasePush(firebaseRef(firebaseDatabase, `chats/${keyFriendAndMe}/`), sendMessage)
         .then(() => {
           setTxt('')
+          onNewMessage(friendUID, myUid, user, sendMessage)
           console.log('send message successfully')
-          handleNewMessage
+        })
+    } else {
+      firebasePush(firebaseRef(firebaseDatabase, `chats/${myUid}-${friendUID}/`), sendMessage)
+        .then(() => {
+          setTxt('')
+          onNewMessage(friendUID, myUid, user, sendMessage)
+          console.log('send message successfully')
         })
     }
   }
@@ -176,7 +196,7 @@ const Messages = props => {
   }
   const acceptAddFriend = () => {
     const dbRef = firebaseRef(firebaseDatabase);
-    firebaseGet(firebaseChild(dbRef, `users/`)).then((snapshot) => {
+    firebaseGet(firebaseChild(dbRef, `users/`)).then(async (snapshot) => {
       if (snapshot.exists) {
         const data = snapshot.val();
         const friendId = userId
@@ -204,7 +224,7 @@ const Messages = props => {
           const newFriendListForFriend = data[friendId].friendList.concat(myUid)
           firebaseSet(firebaseRef(firebaseDatabase, `users/${friendId}/friendList`), newFriendListForFriend)
         }
-        setCheckFriend(true)
+        await setCheckFriend(true)
 
       } else {
         console.log('no data')
@@ -215,11 +235,16 @@ const Messages = props => {
 
 
   }  
+  // useEffect(()=>{
+  //   console.log(props.route.params.userList)
+    
+  // })
   
   useEffect(() => {
     console.log('==================message==================')
-
-    // display 'Accept' if user in friendRequest list or '+ Add Friend'
+    // console.log("firebaseAut.currentUser.uid")
+    // console.log(firebaseAut.currentUser.uid)
+    // console.log(firebaseAut.currentUser.uid === myUid)
     AsyncStorage.getItem('user')
     .then(data =>{
       // get uid
@@ -229,10 +254,10 @@ const Messages = props => {
       firebaseGet(firebaseChild(dbRef, `users/${myUID}`)).then((snapshot) => {
         if (snapshot.exists) {
           const data = snapshot.val();
-          if(!data.friendRequest){
-            setBtnAddFriend('+ Add Friend')
-            return
-          }
+          // if(!data.friendRequest){
+          //   setBtnAddFriend('+ Add Friend')
+          //   return
+          // }
           const friendId = userId
           //if()
           data.friendRequest.includes(friendId) === false 
@@ -245,10 +270,13 @@ const Messages = props => {
       });
     })
 
+    
+
     // get messages 
     // get messages list from firebase
     const unSub = firebaseOnValue(firebaseRef(firebaseDatabase, 'chats/'), async (snapshot) => {
       if (snapshot.exists) {
+        await setCheckFriend(isFriend)
         const data = snapshot.val();
         const userTypeString = await AsyncStorage.getItem("user")
         const myUID = JSON.parse(userTypeString).uid
@@ -257,10 +285,9 @@ const Messages = props => {
         setMyUid(myUID)   
         if (data === null) {
           return
-        }
-
-        // filter all chat with myUID and friendUID
-        // const TempKey = await Object.values(Object.keys(data).filter(key => key.includes(myUID)))
+        }      
+        // onNewMessage(friendUID, myUID, props.route.params.userList)
+        // filter all chat with myUID and friendUID        
         const TempKey = await Object.keys(data).filter(key => key.includes(myUID))
 
         // 'check' if undefined -> stop else setKeyFriendAndMe(check)
@@ -274,6 +301,7 @@ const Messages = props => {
         // get all chat fom firebase with link by TempKey
         firebaseOnValue(firebaseRef(firebaseDatabase, `chats/${check}`), async (TempSnapshot) => {
           if(TempSnapshot.exists){
+            
             const MessageFirebase = TempSnapshot.val();
             const getMessageFromFirebase = await Object.keys(MessageFirebase)            
             .map(eachKey =>{
@@ -295,15 +323,14 @@ const Messages = props => {
           }else{
             console.log('No data')
           }
-        })        
+        })
       } else {
         console.log('No data')
       }
     })
 
     return unSub
-  }, [])
-
+  }, []) 
 
   // select photo
   const choosePhoto = async (type) => {
@@ -377,14 +404,6 @@ const Messages = props => {
     alert('handleChooseOption')
     setVisible(false);
   };
-  ///////////////////////////
-
-  //======================================================
-  const handleNewMessage = () => {
-    messagesRef.current.scrollToEnd({ animated: true });
-  };
-  //======================================================
-
 
   return (
     <View style={styles.SendMessScreen}>
@@ -472,8 +491,6 @@ const Messages = props => {
                 // auto scroll to bottom when user open the screen
                 inverted={true}
               />
-              
-              
           }
         </View>
       </View>

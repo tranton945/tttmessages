@@ -14,6 +14,9 @@
 // yarn add react-native-dialog
 // yarn add react-native-image-picker
 // npm install moment --save
+// yarn add @react-native-firebase/app
+// yarn add @react-native-firebase/messaging
+
 
 // firebase web
 // const firebaseConfig = {
@@ -36,13 +39,13 @@
 // time 55p -> upload img
 
 // notifications
-// https://www.youtube.com/watch?v=zOiu8OkTfBk&t=1480s
-// 21p
+
 
 
 import {View, Text} from 'react-native';
 import React from 'react';
 import HandleImg from './utilities/HandleImg'
+
 
 import {
   LoginScreen,
@@ -53,6 +56,7 @@ import {
   UserChat,
   Messages,
   ChatRoomMessages,
+  ChatRoom,
 } from './screens';
 
 import {UIHeader} from './components';
@@ -74,16 +78,14 @@ export default function App() {
           <Stack.Screen options={{ headerShown: false }} name={"RegisterScreen"} component={RegisterScreen} />
           <Stack.Screen options={{ headerShown: false }} name={"ForgotPasswordScreen"} component={ForgotPasswordScreen} />
           <Stack.Screen 
-          options={{ headerShown: false }} 
-          name={"UITab"} component={UITab} />
+            options={{ headerShown: false }} 
+            name={"UITab"} component={UITab} />
           <Stack.Screen options={{ headerShown: false }} name={"Messages"} component={Messages} />
           <Stack.Screen options={{ headerShown: false }} name={"ChatRoomMessages"} component={ChatRoomMessages} />
+          <Stack.Screen options={{ headerShown: false }} name={"ChatRoom"} component={ChatRoom} />
         </Stack.Navigator>
       </NavigationContainer>
-      {/* <HandleImg></HandleImg> */}
     </SafeAreaProvider>
-    // <View style={{backgroundColor: 'black'}}>
-    //   <Text>asdasdasdas</Text>
-    // </View>
+
   );
 }

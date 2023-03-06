@@ -16,6 +16,8 @@ import {
   firebaseOnValue,
 } from '../../firebase/firebase'
 
+
+
 const ChatRoom = (props) => {
   const [roomList, setRoomList] = useState([])
 
@@ -94,7 +96,7 @@ const ChatRoom = (props) => {
       } else {
         console.log('no data')
       }
-    })
+    })    
 
   }, [])
 

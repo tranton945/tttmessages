@@ -14,6 +14,7 @@ import {
   get,
   push,
   child,  
+  onChildAdded
  } from 'firebase/database'
 import { getStorage } from "firebase/storage";
 
@@ -50,6 +51,7 @@ const firebaseGet = get;
 const firebaseChild = child;
 const firebaseOnValue = onValue;
 const firebasePush = push;
+const firebaseOnChildAdded = onChildAdded;
 
 export {
     firebaseAut,
@@ -65,4 +67,5 @@ export {
     signInWithEmailAndPassword,
     firebasePush,
     storage,
+    firebaseOnChildAdded
 }

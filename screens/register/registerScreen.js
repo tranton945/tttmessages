@@ -18,6 +18,8 @@ import {
   sendEmailVerification,
 } from '../../firebase/firebase'
 
+import messaging from '@react-native-firebase/messaging';
+
 const RegisterScreen = (props) => {
   const [email, setEmail] = useState('abs123@gmail.com');
   const [password, setPassword] = useState('Aa12345678@123');
@@ -28,8 +30,9 @@ const RegisterScreen = (props) => {
     // use createUserWithEmailAndPassword to create a new user in firebase
     checkValidate() == true ?
       createUserWithEmailAndPassword(firebaseAut, email, password)
-        .then((createUser) => {
+        .then(async (createUser) => {
           const user = createUser.user
+          const takeFMCToke = await messaging().getToken()
           firebaseSet(firebaseRef(firebaseDatabase, `users/${user.uid}`),{
             info:{
               email: user.email,
@@ -37,6 +40,7 @@ const RegisterScreen = (props) => {
               displayName: user.email,
               photoURL: 'https://i.pinimg.com/280x280_RS/2e/45/66/2e4566fd829bcf9eb11ccdb5f252b02f.jpg',
               phoneNumber: '',
+              fcmToken: takeFMCToke,
             },
             friendRequest: {
               '0': user.uid
