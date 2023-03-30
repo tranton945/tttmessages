@@ -1,5 +1,7 @@
-import React, { useEffect, useState } from 'react'
-
+import {
+    Platform,
+    PermissionsAndroid,
+  } from 'react-native';
 import {
     launchCamera,
     launchImageLibrary
@@ -13,67 +15,190 @@ import {
 } from "firebase/storage";
 import { async } from '@firebase/util';
 
-const [filePath, setFilePath] = useState({});
-const [aaw, setAaw] = useState();
-const a = async (type) =>{
-    let options = {
-        mediaType: type,
-        maxWidth: 2560,
-        maxHeight: 1440,
-        quality: 1,
-    };
-    await launchImageLibrary(options, async (response) => {
-        const data = response.assets[0]
-
-        // console.log('Response = ', Object.keys(response))
-        // console.log('=====================launchImageLibrary===================')
-        // console.log('Response = ',response.assets[0].uri)
-
-        if (response.didCancel) {
-            alert('User cancelled camera picker');
-            return;
-        } else if (response.errorCode == 'camera_unavailable') {
-            alert('Camera not available on device');
-            return;
-        } else if (response.errorCode == 'permission') {
-            alert('Permission not satisfied');
-            return;
-        } else if (response.errorCode == 'others') {
-            alert(response.errorMessage);
-            return;
+const requestCameraPermission = async () => {
+    if (Platform.OS === 'android') {
+        try {
+            const granted = await PermissionsAndroid.request(
+                PermissionsAndroid.PERMISSIONS.CAMERA,
+                {
+                    title: 'Camera Permission',
+                    message: 'App needs camera permission',
+                },
+            );
+            // If CAMERA Permission is granted
+            return granted === PermissionsAndroid.RESULTS.GRANTED;
+        } catch (err) {
+            console.warn(err);
+            return false;
         }
-        // console.log('base64 -> ', data.base64);
-        // console.log('uri -> ', data.uri);
-        // console.log('width -> ', data.width);
-        // console.log('height -> ', data.height);
-        // console.log('fileSize -> ', data.fileSize);
-        // console.log('type -> ', data.type);
-        // console.log('fileName -> ', data.fileName);    
-
-        setFilePath(data);
-
-        // const res = await fetch(data.uri)
-        // const blod = await res.blob();
-        // const fileName = data.uri.substring(data.uri.lastIndexOf('/') + 1)
-        // console.log('blod')
-        // console.log(blod)
-        // console.log('res')
-        // console.log(res)
-        // console.log('fileName')
-        // console.log(fileName)
-
-        // const da = await uploadPhoto(fileName, blod)
-        // console.log('da')
-        // console.log(uploadPhoto(fileName, blod))
-        
-    });
-}
-const selectPhoto = () => {
-
-    setAaw('asdw2')
-
-
-    return aaw
+    } else return true;
+};
+const requestExternalWritePermission = async () => {
+    if (Platform.OS === 'android') {
+        try {
+            const granted = await PermissionsAndroid.request(
+                PermissionsAndroid.PERMISSIONS.WRITE_EXTERNAL_STORAGE,
+                {
+                    title: 'External Storage Write Permission',
+                    message: 'App needs write permission',
+                },
+            );
+            // If WRITE_EXTERNAL_STORAGE Permission is granted
+            return granted === PermissionsAndroid.RESULTS.GRANTED;
+        } catch (err) {
+            console.warn(err);
+            alert('Write permission err', err);
+        }
+        return false;
+    } else return true;
 };
 
-export default selectPhoto;
+    // take ing or vid by camera
+    // type is 'photo' or 'video' 
+export const capturePhoto = (type) => {
+    return new Promise(async (resolve, reject) => {
+    let options = {
+        mediaType: type,
+        maxWidth: 1920,
+        maxHeight: 1080,
+        quality: 1,
+        videoQuality: 'low',
+        durationLimit: 45, //Video max duration in seconds
+        saveToPhotos: true,
+    };
+
+    let isCameraPermitted = await requestCameraPermission();
+    let isStoragePermitted = await requestExternalWritePermission();
+    if (isCameraPermitted && isStoragePermitted) {
+        await launchCamera(options, async (response) => {
+            const data = response.assets[0]
+            console.log('Response = ', response);
+
+            if (response.didCancel) {
+                alert('User cancelled camera picker');
+                return;
+            } else if (response.errorCode == 'camera_unavailable') {
+                alert('Camera not available on device');
+                return;
+            } else if (response.errorCode == 'permission') {
+                alert('Permission not satisfied');
+                return;
+            } else if (response.errorCode == 'others') {
+                alert(response.errorMessage);
+                return;
+            }
+            const res = await fetch(data.uri)
+            const blod = await res.blob();
+            const fileName = data.uri.substring(data.uri.lastIndexOf('/') + 1)
+
+            uploadPhoto(fileName, blod).then(downloadURL => {
+                resolve(downloadURL);
+            }).catch((error) => {
+                console.log('uploadPhoto function' + error);
+            })
+        });
+    }
+})
+};
+
+  // select ing or vid
+  // type is 'photo' or 'video' 
+export const choosePhoto = (type) => {
+    return new Promise(async (resolve, reject) => {
+        let options = {
+            mediaType: type,
+            maxWidth: 1920,
+            maxHeight: 1080,
+            quality: 1,
+        };
+        await launchImageLibrary(options, async (response) => {
+            const data = response.assets[0]
+
+            if (response.didCancel) {
+                alert('User cancelled camera picker');
+                return;
+            } else if (response.errorCode == 'camera_unavailable') {
+                alert('Camera not available on device');
+                return;
+            } else if (response.errorCode == 'permission') {
+                alert('Permission not satisfied');
+                return;
+            } else if (response.errorCode == 'others') {
+                alert(response.errorMessage);
+                return;
+            }
+            // setFilePath(data);
+
+            const res = await fetch(data.uri)
+            const blod = await res.blob();
+            const fileName = data.uri.substring(data.uri.lastIndexOf('/') + 1)
+
+            uploadPhoto(fileName, blod).then(downloadURL => {
+                resolve(downloadURL);
+            }).catch((error) => {
+                console.log('uploadPhoto function' + error);
+            })
+        });
+    })
+};
+
+const uploadPhoto = (fileName, file) => {
+    return new Promise((resolve, reject) => {
+        const storageRef = ref(storage, `chatImages/${fileName}`);
+        const uploadTask = uploadBytesResumable(storageRef, file);
+
+        uploadTask.on('state_changed',
+            (snapshot) => {
+                switch (snapshot.state) {
+                    case 'paused':
+                        console.log('Upload is paused');
+                        break;
+                    case 'running':
+                        console.log('Upload is running');
+                        break;
+                }
+            },
+            (error) => {
+                reject(error);
+            },
+            () => {
+                getDownloadURL(uploadTask.snapshot.ref).then((downloadURL) => {
+                    resolve(downloadURL);
+                });
+            }
+        );
+    });
+}
+
+//   const uploadPhoto = (refTo, file) => {
+
+//     // upload ing to storage in firebase
+//     const storageRef = ref(storage, `test/${refTo}`);
+//     const uploadTask = uploadBytesResumable(storageRef, file);
+    
+//     // Register three observers:
+//     uploadTask.on('state_changed',
+//     (snapshot) => {
+//       // Observe state change events such as progress, pause, and resume
+//       // Get task progress, including the number of bytes uploaded and the total number of bytes to be uploaded
+//       const progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
+//       console.log('Upload is ' + progress + '% done');
+//       switch (snapshot.state) {
+//         case 'paused':
+//           console.log('Upload is paused');
+//           break;
+//         case 'running':
+//           console.log('Upload is running');
+//           break;
+//       }},
+//       (error) => {
+//         // Handle unsuccessful uploads
+//         console.log(error)
+//       },
+//       () => {
+//         getDownloadURL(uploadTask.snapshot.ref).then((downloadURL) => {
+//           console.log('File available at', downloadURL);
+//         });
+//       }
+//     );
+//   }

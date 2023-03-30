@@ -15,18 +15,16 @@ import styles from './style';
 import { UIHeader } from '../../components';
 import ItemMessageChatRoom from './itemMessageChatRoom';
 import Dialog from "react-native-dialog";
-
-// image picker
 import {
-  launchCamera,
-  launchImageLibrary
-} from 'react-native-image-picker';
-
-import { storage } from '../../firebase/firebase';
-import { 
-  ref, 
-  uploadBytesResumable, 
-  getDownloadURL } from "firebase/storage";
+  // take img or vid by storage
+  // type is 'photo' or 'video' 
+  // 'photo' already, "video" coding
+  choosePhoto,
+  // take ing or vid by camera
+  // type is 'photo' or 'video' 
+  // 'photo' already, "video" coding
+  capturePhoto
+} from '../../utilities/HandlePhoto.js';
 
 import {
   firebaseAut,
@@ -40,7 +38,7 @@ import {
 } from '../../firebase/firebase'
 import { FlatList, Switch } from 'react-native-gesture-handler';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { async } from '@firebase/util';
+
 
 import UserChat from '../chatScreen/userChat'
 
@@ -71,7 +69,6 @@ const ChatRoomMessages = props => {
         imgMessage={item.imgMessage}
       // onPress = {alert(()=>{"Press"})}
       />
-
     )
   }
 
@@ -142,8 +139,6 @@ const ChatRoomMessages = props => {
           const roomMessage = data[eachKey];
           // console.log("roomMessage")
           // console.log(roomMessage)
-          // cần điều chỉnh lại phần name
-          // lúc đăng ký tạo ra display name luôn
           return {
             photoUrl: roomMessage.photoUrl,
             name: roomMessage.displayName,                
@@ -154,69 +149,12 @@ const ChatRoomMessages = props => {
             imgMessage: roomMessage.imgMessage,
           }  
         })
-        .sort((item1, item2) =>item1.timestamp - item2.timestamp))
+        .sort((item1, item2) =>item2.timestamp - item1.timestamp))
       } else {
         console.log('No data')
       }
     })
   }, [])
-
-    // select photo
-    const choosePhoto = async (type) => {
-      let options = {
-        mediaType: type,
-        maxWidth: 2560,
-        maxHeight: 1440,
-        quality: 1,
-      };
-      await launchImageLibrary(options, async (response) => {
-        if (response.didCancel) {
-          return;
-        } else if (response.errorCode == 'camera_unavailable') {
-          alert('Camera not available on device');
-          return;
-        } else if (response.errorCode == 'permission') {
-          alert('Permission not satisfied');
-          return;
-        } else if (response.errorCode == 'others') {
-          alert(response.errorMessage);
-          return;
-        }
-        const data = response.assets[0]
-        setFilePath(data);
-  
-        const res = await fetch(data.uri)
-        const blod = await res.blob();
-        const fileName = data.uri.substring(data.uri.lastIndexOf('/') + 1)
-  
-        uploadPhoto(fileName, blod)
-      });
-    }
-    // upload ing to storage in firebase
-    const uploadPhoto = (fileName, file) => {
-      const storageRef = ref(storage, `chatRoomMessagesImages/${fileName}`);
-      const uploadTask = uploadBytesResumable(storageRef, file);    
-     
-      uploadTask.on('state_changed',
-      (snapshot) => {
-        switch (snapshot.state) {
-          case 'paused':
-            console.log('Upload is paused');
-            break;
-          case 'running':
-            console.log('Upload is running');
-            break;
-        }},
-        (error) => {      
-          console.log(error)
-        },
-        () => {
-          getDownloadURL(uploadTask.snapshot.ref).then((downloadURL) => {
-            clickSendMessages('photo', downloadURL)
-          });
-        }
-      );
-    }
 
   const addNewMember = (uid) => {
     // alert(uid)
@@ -234,7 +172,7 @@ const ChatRoomMessages = props => {
   }
 
   const [searchHandler, setSearchHandler] = useState(false)
-  // list of items we have when click search
+  // list of items when click search
   const [dataList, setDataList] = useState([]);
   const setData = (data) =>{
     setDataList(data)
@@ -319,12 +257,20 @@ const ChatRoomMessages = props => {
             style={styles.SendMessInput} />
           <View style={styles.chooseOptionSendMess}>
             <TouchableOpacity
-              onPress={() => { camera() }}
+                onPress={() => {
+                  capturePhoto('photo').then((downloadURL) => {
+                    clickSendMessages('photo', downloadURL)
+                  })
+                }}
             >
               <Icon name="camera" size={26} style={styles.iconSendMess} />
             </TouchableOpacity>
             <TouchableOpacity
-              onPress={() => { choosePhoto('photo') }}
+                onPress={() => {
+                  choosePhoto('photo').then((downloadURL) => {
+                    clickSendMessages('photo', downloadURL)
+                  })
+                }}
             >
               <Icon name="image" size={26} style={styles.iconSendMess} />
             </TouchableOpacity>
@@ -338,42 +284,42 @@ const ChatRoomMessages = props => {
       </View>
     </View>
     :
-    <View>      
-    <UIHeader
-      title="Home"
-      leftIconName="chevron-left"
-      rightIconName="search"
-      onPressLeftIconName={() => {
-        setSearchHandler(false)
-      }}
-      searchHandler={searchHandler}
-      // setData use for get list of data when search
-      setData={setData}
-    />
-    <View style={styles.container}>
-      <ScrollView>
-        {
-          dataList.map((item, index) => {
-            return (
-              // item click
-              <TouchableOpacity
-                key={item.userId}
-                style={styles.itemUser}
-                onPress={() => {addMember(item)}}
-              >
-                <UserChat
-                  name={item.name}
-                  url={item.url}
-                  email={item.email}
-                  userId={item.userId}
-                  isFriend={item.isFriend}
-                />
-              </TouchableOpacity>
-            );
-          })}
-      </ScrollView>
-    </View>
-  </View>
+      <View>
+        <UIHeader
+          title="Home"
+          leftIconName="chevron-left"
+          rightIconName="search"
+          onPressLeftIconName={() => {
+            setSearchHandler(false)
+          }}
+          searchHandler={searchHandler}
+          // setData use for get list of data when search
+          setData={setData}
+        />
+        <View style={styles.container}>
+          <ScrollView>
+            {
+              dataList.map((item, index) => {
+                return (
+                  // item click
+                  <TouchableOpacity
+                    key={item.userId}
+                    style={styles.itemUser}
+                    onPress={() => { addMember(item) }}
+                  >
+                    <UserChat
+                      name={item.name}
+                      url={item.url}
+                      email={item.email}
+                      userId={item.userId}
+                      isFriend={item.isFriend}
+                    />
+                  </TouchableOpacity>
+                );
+              })}
+          </ScrollView>
+        </View>
+      </View>
 
   
   );

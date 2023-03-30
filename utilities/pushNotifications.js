@@ -1,16 +1,7 @@
 import messaging from '@react-native-firebase/messaging';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useEffect, useState } from 'react';
-// import {
-//   firebaseAut, 
-//   firebaseDatabase,
-//   createUserWithEmailAndPassword,
-//   firebaseGet,
-//   firebaseSet,
-//   firebaseRef,
-//   firebaseOnValue,
-//   sendEmailVerification,
-// } from '../firebase/firebase'
+
 import {
   firebaseAut,
   firebaseChild,
@@ -102,10 +93,10 @@ export const notificationListener = () => {
       }
     });
 
-  messaging().
-    onMessage(async remoteMessage => {
-      console.log('remoteMessage', remoteMessage)
-    })
+  // messaging().
+  //   onMessage(async remoteMessage => {
+  //     console.log('remoteMessage', remoteMessage)
+  //   })
 }
 
 //---------------------send notification --------------------

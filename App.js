@@ -16,6 +16,11 @@
 // npm install moment --save
 // yarn add @react-native-firebase/app
 // yarn add @react-native-firebase/messaging
+// npm install react-native-video
+// npm install --save react-native-twilio-video-webrtc
+// npm install twilio
+
+
 
 
 // firebase web
@@ -44,8 +49,6 @@
 
 import {View, Text} from 'react-native';
 import React from 'react';
-import HandleImg from './utilities/HandleImg'
-
 
 import {
   LoginScreen,

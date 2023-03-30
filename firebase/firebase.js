@@ -14,7 +14,10 @@ import {
   get,
   push,
   child,  
-  onChildAdded
+  onChildAdded,
+  query,
+  limitToLast,
+  limitToFirst,
  } from 'firebase/database'
 import { getStorage } from "firebase/storage";
 
@@ -52,6 +55,8 @@ const firebaseChild = child;
 const firebaseOnValue = onValue;
 const firebasePush = push;
 const firebaseOnChildAdded = onChildAdded;
+const firebaseQuery = query;
+// const firebaseLimitToLast  = limitToLast ;
 
 export {
     firebaseAut,
@@ -67,5 +72,8 @@ export {
     signInWithEmailAndPassword,
     firebasePush,
     storage,
-    firebaseOnChildAdded
+    firebaseOnChildAdded,
+    firebaseQuery,
+    limitToLast,
+    limitToFirst
 }
