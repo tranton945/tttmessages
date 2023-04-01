@@ -121,8 +121,9 @@ export const onNewMessage = (friendUid, myUID, data, messages) => {
     });
   }
 };
-// const [keyService, setKeyService] = useState('AAAA46EzMvs:APA91bHqVera_UuRA4-NN4RGHbLeKMgfL0_-yAN4pfT-_k1r7QujXcG168C3nSeQc_j0cziQM1ncNTqFkPfdrPEnCnuS-JH9SnX-Wdu4cY9YqSRy2PBJMYBpyi5LUP3h7Cn8ijd0RYBm');
-let keyService = "AAAA46EzMvs:APA91bHqVera_UuRA4-NN4RGHbLeKMgfL0_-yAN4pfT-_k1r7QujXcG168C3nSeQc_j0cziQM1ncNTqFkPfdrPEnCnuS-JH9SnX-Wdu4cY9YqSRy2PBJMYBpyi5LUP3h7Cn8ijd0RYBm"
+
+import { KEYSERVICE } from './config';
+let keyService = KEYSERVICE
 const sendNotification = async (deviceToken, data, messages) => {
   const thisMessage = messages.type === 'text' ? messages.message : 'You have a new message'
   const message = {

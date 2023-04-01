@@ -469,7 +469,10 @@ const Messages = props => {
                     Call
                   </Dialog.Description>
                 </TouchableOpacity>
-                <TouchableOpacity onPress={() => { console.log('asd') }}>
+                <TouchableOpacity onPress={() => {
+                  props.navigation.navigate("VideoCall", props.route.params.userList)
+                  setVisible(false);
+                 }}>
                   <Dialog.Description style={styles.threeDotMenuOptions}>
                     Video Call
                   </Dialog.Description>

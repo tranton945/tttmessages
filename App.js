@@ -17,9 +17,8 @@
 // yarn add @react-native-firebase/app
 // yarn add @react-native-firebase/messaging
 // npm install react-native-video
-// npm install --save react-native-twilio-video-webrtc
-// npm install twilio
-
+// yarn add @zegocloud/zego-uikit-prebuilt-call-rn@3.0.0-beta.1
+// yarn add @zegocloud/zego-uikit-rn react-delegate-component zego-express-engine-reactnative@3.2.0 react-native-sound @notifee/react-native
 
 
 
@@ -61,6 +60,7 @@ import {
   ChatRoomMessages,
   ChatRoom,
 } from './screens';
+import VideoCall from './utilities/videoCall';
 
 import {UIHeader} from './components';
 import UITab from './navigation/UITab.js';
@@ -86,6 +86,7 @@ export default function App() {
           <Stack.Screen options={{ headerShown: false }} name={"Messages"} component={Messages} />
           <Stack.Screen options={{ headerShown: false }} name={"ChatRoomMessages"} component={ChatRoomMessages} />
           <Stack.Screen options={{ headerShown: false }} name={"ChatRoom"} component={ChatRoom} />
+          <Stack.Screen options={{ headerShown: false }} name={"VideoCall"} component={VideoCall} />
         </Stack.Navigator>
       </NavigationContainer>
     </SafeAreaProvider>
