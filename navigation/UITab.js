@@ -11,6 +11,7 @@ import {
     ChatRoom, 
     Messages} from '.././screens';
 import VideoChat from '../utilities/videoChat';
+import Calling from '../utilities/calling';
 
 import { NavigationContainer } from '@react-navigation/native';
 import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
@@ -22,12 +23,13 @@ const Tab = createBottomTabNavigator();
 
 const UITab = (props) => {
     // const {url, userId, name, email} = props.route.params.theUser;
-    useEffect(()=>{
+    useEffect(() => {
         getFCMToken()
+    }, [])
+    useEffect(() => {
         notificationListener()
         background(props)
-        // console.log(props)
-      })
+    })
 
     return(
         <Tab.Navigator >
@@ -49,13 +51,6 @@ const UITab = (props) => {
             }}
                 name="SettingScreen"
                 component={SettingScreen} />
-            {/* <Tab.Screen options={{
-                headerShown: false,
-                tabBarIcon: () => <Icon name='comments' size={24} color={'black'} />
-            }}
-                name="VideoCall"
-                component={VideoCall} /> */}
-
         </Tab.Navigator>
         
         

@@ -9,9 +9,15 @@ const styles = StyleSheet.create({
         height: '100%',
     },
     body:{
-        backgroundColor: color.gray,
+        // backgroundColor: color.gray,
         // flexDirection: 'column',
-        flex: 100,
+        // flex: 100,
+    },
+    Account:{
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        paddingRight: 20,
+        paddingVertical: 2,
     },
     titleTxt:{
         fontSize: fontSize.h4,
@@ -27,6 +33,7 @@ const styles = StyleSheet.create({
         borderBottomWidth: 1,
         flexDirection: 'row',
         alignItems: 'center',
+        padding: 5
     },
     image: {
         width: 50,
@@ -75,11 +82,27 @@ const styles = StyleSheet.create({
         marginTop: 10,
         
     },
+    btnSaveBox:{
+        alignItems: 'center',
+        justifyContent: 'center',
+        paddingVertical: 5,
+    },
+    btnSave:{
+        backgroundColor: color.facebook,       
+        width: '40%',
+        alignItems: 'center',
+        borderRadius: 25,
+    },
+    btnSaveTxt:{
+        paddingVertical: 5,
+        fontWeight: 'bold',
+        fontSize: fontSize.h5,
+    },
     btnSignOut: {
         backgroundColor: color.buttonRed,       
         width: '70%',
         alignItems: 'center',
-        borderRadius: 12,
+        borderRadius: 25,
     },
     txtSignOut:{
         fontSize: fontSize.h3,

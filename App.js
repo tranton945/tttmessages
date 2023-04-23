@@ -19,6 +19,7 @@
 // npm install react-native-video
 // yarn add @zegocloud/zego-uikit-prebuilt-call-rn@3.0.0-beta.1
 // yarn add @zegocloud/zego-uikit-rn react-delegate-component zego-express-engine-reactnative@3.2.0 react-native-sound @notifee/react-native
+// npm i react-native-sound
 
 
 
@@ -61,6 +62,7 @@ import {
   ChatRoom,
 } from './screens';
 import VideoCall from './utilities/videoCall';
+import Calling from './utilities/calling';
 
 import {UIHeader} from './components';
 import UITab from './navigation/UITab.js';
@@ -86,7 +88,7 @@ export default function App() {
           <Stack.Screen options={{ headerShown: false }} name={"Messages"} component={Messages} />
           <Stack.Screen options={{ headerShown: false }} name={"ChatRoomMessages"} component={ChatRoomMessages} />
           <Stack.Screen options={{ headerShown: false }} name={"ChatRoom"} component={ChatRoom} />
-          <Stack.Screen options={{ headerShown: false }} name={"VideoCall"} component={VideoCall} />
+          <Stack.Screen options={{ headerShown: false }} name={"VideoCall"} component={VideoCall} />          
         </Stack.Navigator>
       </NavigationContainer>
     </SafeAreaProvider>

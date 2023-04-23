@@ -28,6 +28,14 @@ const ItemMessage = props => {
     // console.log(date);
     return date
   }
+  // useEffect(() => {
+  //   console.log(message)
+  //   console.log(timestamp)
+  //   console.log(isSender)
+  //   console.log(type)
+  //   console.log(imgMessage)
+
+  // })
   const checkSenderMessages = isSender === true ? styles.isSenderMessages : styles.isReceiverMessages;
   return (
     <View
@@ -46,13 +54,15 @@ const ItemMessage = props => {
             <View style={[styles.message, checkSender]}>
               <TouchableOpacity style={[styles.itemMessageMessageBox, checkSenderMessages]}>
                 {
+                  //if(type === 'text')
                   type === 'text' ?
                     <View style={styles.typeIsText}>
                       <Text style={styles.itemMessageMessageTxt}>{message}</Text>
                       <Text style={styles.itemMessageTimestampTxt}>{convertTimestemp()}</Text>
                     </View>
-                    :
-                    <View style={styles.typeIsPhoto}>
+                    : //else if(type === 'photo')
+                    type === 'photo' ?  
+                      <View style={styles.typeIsPhoto}>
                       <Image
                         style={{
                           width: window.width / 1.5,
@@ -62,8 +72,19 @@ const ItemMessage = props => {
                         }}
                         source={{ uri: imgMessage }}
                       />
-
+                      <Text style={styles.itemMessageTimestampTxt}>{convertTimestemp()}</Text>
                     </View>
+                      : //else
+                      <View style={styles.typeIsText}>
+                        <Text style={styles.itemMessageMessageTxt}>Video Call</Text>
+                        <Text style={styles.itemMessageTimestampTxt}>{convertTimestemp()}</Text>
+                      </View>
+                      // type === 'video-call' ?
+                      // <View style={styles.typeIsText}>
+                      //   <Text style={styles.itemMessageMessageTxt}>Video Call</Text>
+                      //   <Text style={styles.itemMessageTimestampTxt}>{convertTimestemp()}</Text>
+                      // </View>
+                      // : console.log()
                 }
               </TouchableOpacity>
             </View>
@@ -80,6 +101,7 @@ const ItemMessage = props => {
                       <Text style={styles.itemMessageTimestampTxt}>{convertTimestemp()}</Text>
                     </View>
                     :
+                    type === 'photo' ?
                     <View style={styles.typeIsPhoto}>
                       <Image
                         style={{
@@ -92,7 +114,11 @@ const ItemMessage = props => {
                       />
                       <Text style={styles.itemMessageTimestampTxt}>{convertTimestemp()}</Text>  
                     </View>
-                    
+                    :
+                      <View style={styles.typeIsText}>
+                        <Text style={styles.itemMessageMessageTxt}>Video Call</Text>
+                        <Text style={styles.itemMessageTimestampTxt}>{convertTimestemp()}</Text>
+                      </View>                    
                 }
               </TouchableOpacity>
             </View>

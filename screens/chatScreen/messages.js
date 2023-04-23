@@ -33,7 +33,7 @@ import {
   limitToFirst,
 } from '../../firebase/firebase'
 
-import { getDatabase, ref, onChildAdded, onChildChanged, onChildRemoved } from "firebase/database";
+
 const dbRef = firebaseRef(firebaseDatabase);
 
 import { FlatList, Switch } from 'react-native-gesture-handler';
@@ -66,10 +66,10 @@ const Messages = props => {
   // [{2},{1}]
   // nên dùng một biến trung gian  
   const [latestMessages, setLatestMessages] = useState([]);
-  const [keyFriendAndMe, setKeyFriendAndMe] = useState()
-  const [myUid, setMyUid] = useState('');
+  const [keyFriendAndMe, setKeyFriendAndMe] = useState('')
+  const [myUid, setMyUid] = useState(firebaseAut.currentUser.uid);
   const [btnAddFriend, setBtnAddFriend] = useState('');
-  const [checkFriend, setCheckFriend] = useState(isFriend);
+  const [checkFriend, setCheckFriend] = useState(false);
   // save photo or video here 
   const [filePath, setFilePath] = useState({});
   // dataLoaded use for checking keyFriendAndMe, if keyFriendAndMe have data -> true
@@ -99,9 +99,18 @@ const Messages = props => {
       />
     )
   }
+  // useEffect(() => {
+  //   console.log('chatHistory')
+  //   console.log(chatHistory)
+  // },[chatHistory])
+
+  useEffect(() => {
+    setCheckFriend(isFriend)
+  })
 
   useEffect(()=>{
     if(latestMessages.length == 0) return
+    console.log(latestMessages)
     //update chatHistory when we have new messages
     const newChatHistory =[
       latestMessages,
@@ -112,6 +121,10 @@ const Messages = props => {
 
   // send message function
   const clickSendMessages = async (typeMess, photoMessageURL) => {
+
+    // console.log(keyFriendAndMe.length === 0 )
+    // return
+    
     if (txt.trim().length === 0) {
       console.log("no txt")
       if (photoMessageURL === undefined) {
@@ -164,7 +177,7 @@ const Messages = props => {
 
     // send message to firebase wiht id = myUID-friendUID 
     // user firebasePush to send message
-    if (keyFriendAndMe !== null && keyFriendAndMe !== undefined) {
+    if (keyFriendAndMe.length !== 0) {
       firebasePush(firebaseRef(firebaseDatabase, `chats/${keyFriendAndMe}/`), sendMessage)
         .then(() => {
           onNewMessage(friendUID, myUid, user, sendMessage)
@@ -178,6 +191,37 @@ const Messages = props => {
         })
     }
   }
+  // display 'Accept' if user in friendRequest list or '+ Add Friend'
+  useEffect(() => {
+    if(checkFriend === true){
+      return
+    } 
+    AsyncStorage.getItem('user')
+    .then(data =>{
+      // get uid
+      const myUID = JSON.parse(data).uid
+      const dbRef = firebaseRef(firebaseDatabase);
+      // check item user are in friendRequest list?
+      firebaseGet(firebaseChild(dbRef, `users/${myUID}`)).then((snapshot) => {
+        if (snapshot.exists) {
+          const data = snapshot.val();
+          if(!data.friendRequest){
+            setBtnAddFriend('+ Add Friend')
+            return
+          }
+          const friendId = userId
+          //if()
+          data.friendRequest.includes(friendId) === false 
+          ? setBtnAddFriend('+ Add Friend') : setBtnAddFriend('Accept')  
+        } else {
+          console.log('no data')
+        }
+      }).catch((error) => {
+        console.error(error);
+      });
+    })
+  },[])
+
   const clickAddFriend = () => {
     if (btnAddFriend === 'Accept') {
       Alert.alert("Add Friend", "", [
@@ -197,15 +241,19 @@ const Messages = props => {
       ])
     } else {
       const friendId = userId
+      console.log(friendId)
+      console.log('firebaseAut.currentUser.uid')
+      console.log(firebaseAut.currentUser.uid)
+      // return
       const dbRef = firebaseRef(firebaseDatabase);
       firebaseGet(firebaseChild(dbRef, `users/`)).then((snapshot) => {
         if (snapshot.exists) {
           const data = snapshot.val();
-          if (data[friendId].friendRequest.includes(myUid)) {
+          if (data[friendId].friendRequest.includes(firebaseAut.currentUser.uid)) {
             alert('The request has been sent, wait for the other person to accept')
             return
           }
-          const uidRequest = data[friendId].friendRequest.concat(myUid)
+          const uidRequest = data[friendId].friendRequest.concat(firebaseAut.currentUser.uid)
           firebaseSet(firebaseRef(firebaseDatabase, `users/${friendId}/friendRequest`), uidRequest)
         } else {
           console.log('no data')
@@ -222,16 +270,16 @@ const Messages = props => {
         const data = snapshot.val();
         const friendId = userId
 
-        if (data[myUid].friendList.includes(friendId) === true) {
+        if (data[firebaseAut.currentUser.uid].friendList.includes(friendId) === true) {
           return
         } else {
           // delete friendId from friendRequest list
-          const newFriendRequestListForMe = data[myUid].friendRequest
+          const newFriendRequestListForMe = data[firebaseAut.currentUser.uid].friendRequest
             .filter(key => key !== friendId)
 
           // add friendId to friendList
           // use 'concat' to add new data for friend list (newFriendList.concat(friendId))
-          const newFriendListForMe = data[myUid].friendList.concat(friendId)
+          const newFriendListForMe = data[firebaseAut.currentUser.uid].friendList.concat(friendId)
 
           firebaseSet(firebaseRef(firebaseDatabase, `users/${myUid}/friendList`), newFriendListForMe)
             .then(() => {
@@ -257,9 +305,11 @@ const Messages = props => {
 
   }
 
+
+
   // setKeyFriendAndMe when screen called
   useEffect(()=>{
-    if(keyFriendAndMe === undefined){      
+    if(keyFriendAndMe === ''){
       firebaseOnValue(firebaseRef(firebaseDatabase, 'chats/'), async (snapshot) => {
         const data = snapshot.val();
         const userTypeString = await AsyncStorage.getItem("user")
@@ -285,10 +335,12 @@ const Messages = props => {
   const [numberOfMessages, setNumberOfMessages] = useState(10)
   useEffect(() => {
     if (!dataLoaded) {
-      if(keyFriendAndMe !== undefined){
-        setDataLoaded(true);
-      }else{
+      // default of keyFriendAndMe is '' but after setKeyFriendAndMe(TempKey) log keyFriendAndMe is [] if null
+      // therefore we need to two condition
+      if(keyFriendAndMe === '' || keyFriendAndMe.length === 0){
         return
+      }else{
+        setDataLoaded(true);
       }      
       const messageRef = firebaseChild(dbRef, `chats/${keyFriendAndMe}`);
       //function limitToLast get the last message
@@ -323,7 +375,7 @@ const Messages = props => {
         setChatHistory(getMessageFromFirebase)
         // sử dụng count để kích hoạt event listeners (update chatHistory khi friend send mess)
         setCount(count+1)
-        console.log(count)
+        // console.log(count)
       })
     }
   }, [keyFriendAndMe])
@@ -364,16 +416,44 @@ const Messages = props => {
           type: data[0].type
         }
         setLatestMessages(addNewMessage)
-  
+        // if(addNewMessage.type == "video-call"){
+        //   props.navigation.navigate("Calling", addNewMessage)
+        // }
       })
   },[count])
+
+  // video call 
+  const handleVideoCall = async () => {
+    const sendMessage = await {
+      UID: myUid,
+      type: 'video-call',
+      timestamp: (new Date()).getTime(),
+    }
+
+    const friendUID = myUid
+    if (keyFriendAndMe.length !== 0) {
+      firebasePush(firebaseRef(firebaseDatabase, `chats/${keyFriendAndMe}/`), sendMessage)
+        .then(() => {
+          // onNewMessage(friendUID, myUid, user, sendMessage)
+          console.log('send message successfully')
+        })
+    } else {
+      firebasePush(firebaseRef(firebaseDatabase, `chats/${myUid}-${friendUID}/`), sendMessage)
+        .then(() => {
+          // onNewMessage(friendUID, myUid, user, sendMessage)
+          console.log('send message successfully')
+        })
+    }    
+    props.navigation.navigate("VideoCall", props.route.params.userList)
+    setVisible(false);
+  }
 
   const [loadMoreMessagesList, setLoadMoreMessagesList] = useState([])
   // load more messages when user roll up
   const loadMoreMessages = () => {
     const messageRef = firebaseChild(dbRef, `chats/${keyFriendAndMe}`);
     //function limitToLast get the last message
-    const queryRef = firebaseQuery(messageRef, limitToLast(chatHistory.length + 3));
+    const queryRef = firebaseQuery(messageRef, limitToLast(chatHistory.length + 10));
     firebaseGet(queryRef).then(async (snapshot) => {      
       const userTypeString = await AsyncStorage.getItem("user")
       const myUID = JSON.parse(userTypeString).uid
@@ -438,7 +518,7 @@ const Messages = props => {
       <View style={styles.SendMessBody}>
         {
           checkFriend === false ?
-            // if (checkFriend === false ?)
+            // if (checkFriend === false)
             <View style={styles.friendRequest}>
               <TouchableOpacity onPress={() => { clickAddFriend() }}>
                 <Text style={styles.friendRequestTxt}>{btnAddFriend}</Text>
@@ -470,8 +550,7 @@ const Messages = props => {
                   </Dialog.Description>
                 </TouchableOpacity>
                 <TouchableOpacity onPress={() => {
-                  props.navigation.navigate("VideoCall", props.route.params.userList)
-                  setVisible(false);
+                  handleVideoCall()
                  }}>
                   <Dialog.Description style={styles.threeDotMenuOptions}>
                     Video Call

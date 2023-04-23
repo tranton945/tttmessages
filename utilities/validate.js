@@ -1,6 +1,8 @@
 export const ValidateEmail = (email) => (/^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/.test(email))
 //https://www.w3resource.com/javascript/form/email-validation.php
 
+export const ValidatePhoneNumber = (phoneNumber) => (/^[0-9]{10}$/.test(phoneNumber))
+
 
 // export const ValidatePassword = (password) => (/^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])([a-zA-Z0-9]{8,})$/.test(password))
 

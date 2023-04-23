@@ -1,7 +1,25 @@
 import {View, Text, Image, TouchableOpacity} from 'react-native';
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import {UIHeader} from '../../components';
 import styles from './style';
+
+import {
+  firebaseAut,
+  firebaseChild,
+  firebaseDatabase,
+  firebaseGet,
+  firebaseRef,
+  firebaseSet,
+  firebasePush,
+  firebaseOnValue,
+  firebaseOnChildAdded,
+  firebaseQuery,
+  limitToLast,
+  limitToFirst,
+} from '../../firebase/firebase'
+
+import AsyncStorage from '@react-native-async-storage/async-storage';
+
 
 const UserChat = props => {
   //get data from chatScreen base on list of users get from firebase
@@ -9,16 +27,44 @@ const UserChat = props => {
     url, 
     userId, 
     name, 
-    message, 
-    unReadMessage, 
     email, 
     isFriend} = props;
 
-  // useEffect(() => {
-  //   console.log('====================UserChat================================')
-  //   console.log('name: ' + name)
-  //   console.log(isFriend)
-  // })
+  const [message, setMessage] = useState("no message") 
+  useEffect(() => {
+    firebaseOnValue(firebaseRef(firebaseDatabase, 'chats/'), async (snapshot) => {
+      const data = snapshot.val();
+      const userTypeString = await AsyncStorage.getItem("user")
+      const myUID = JSON.parse(userTypeString).uid
+      const friendUID = userId;
+
+      const TempKey = Object.keys(data).filter(key => key.includes(myUID) && key.includes(friendUID))
+
+      //TempKey[0], TempKey is array
+      firebaseOnValue(firebaseQuery(firebaseRef(firebaseDatabase, `chats/${TempKey[0]}`), limitToLast(1)), async (snapshot) => {        
+        const MessageFirebase = snapshot.val()        
+        if (MessageFirebase === null || MessageFirebase === undefined) {
+          return
+        }
+        const data = Object.values(MessageFirebase)
+
+        if(data[0].type == 'text'){
+          setMessage(data[0].message)
+        }
+        if(data[0].type == 'photo'){
+          setMessage('you received a photo')
+        }
+        if(data[0].type == 'video-call'){
+          setMessage('Video call')
+        }
+
+        
+      })
+    })
+
+  }, [])
+
+
   return (
     <View key={props.userId}>
       <View style={styles.userChat}>
@@ -37,7 +83,11 @@ const UserChat = props => {
             :
             <Text style={styles.userChatName}>{props.name} [người lạ]</Text>
           }          
-          <Text style={styles.userChatMessage}>{props.message}</Text>
+          {/* substring if the message more 30 character*/}
+          <Text style={styles.userChatMessage}>
+            {/* {message} */}
+            {message.length > 30 ? message.substring(0, 30) + "..." : message}
+          </Text>
         </View>
       </View>
     </View>

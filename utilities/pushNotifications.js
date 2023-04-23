@@ -36,26 +36,36 @@ export const getFCMToken = async () => {
     const userDataTxt = await AsyncStorage.getItem('userData')
     const userData = JSON.parse(userDataTxt)
     const fcmToken = userData.fcmToken
+
+    firebaseOnValue(firebaseRef(firebaseDatabase, `users/${firebaseAut.currentUser.uid}/info`), async (snapshot) => {
+      if (snapshot.exists) {
+        const data = snapshot.val();
+
+        if (!fcmToken) {
+            try {          
+                // get new fcm token
+                const takeFCMToke = await messaging().getToken()
+                firebaseSet(firebaseRef(db, `/users/${user.uid}/info`), {
+                  email: data.email,
+                  emailVerified: data.emailVerified,
+                  displayName: data.displayName,
+                  photoURL: data.photoURL,
+                  phoneNumber: data.phoneNumber,
+                  fcmToken: takeFCMToke,
+                })
+            }
+            catch (err) {
+                console.log(err)
+            }
+        }
+
+      } else {
+        console.log('no data')
+      }
+    })
     // console.log('-------------------push notification------------------------')
     // if can not get FCM token -> get new token and update 
-    const data = userData.info
-    if (!fcmToken) {
-        try {          
-            // get new fmc token
-            const takeFMCToke = await messaging().getToken()
-            firebaseSet(firebaseRef(db, `/users/${user.uid}/info`), {
-              email: data.email,
-              emailVerified: data.emailVerified,
-              displayName: data.email,
-              photoURL: data.photoURL,
-              phoneNumber: data.phoneNumber,
-              fmcToken: takeFMCToke,
-            })
-        }
-        catch (err) {
-            console.log(err)
-        }
-    }
+
 
   // Lắng nghe sự kiện thiết bị nhận được token mới
   messaging().onTokenRefresh(token => {
@@ -66,7 +76,7 @@ export const getFCMToken = async () => {
       displayName: data.email,
       photoURL: data.photoURL,
       phoneNumber: data.phoneNumber,
-      fmcToken: token,
+      fcmToken: token,
     })
   });     
 }
@@ -106,7 +116,7 @@ export const onNewMessage = (friendUid, myUID, data, messages) => {
   if(myUID === firebaseAut.currentUser.uid){
     const dbRef = firebaseRef(firebaseDatabase);
     // check item user are in friendRequest list?
-    firebaseGet(firebaseChild(dbRef, `users/${friendUid}/info/fmcToken`))
+    firebaseGet(firebaseChild(dbRef, `users/${friendUid}/info/fcmToken`))
     .then((snapshot) => {
       if (snapshot.exists) {
         const deviceToken = snapshot.val();

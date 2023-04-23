@@ -64,7 +64,7 @@ const UIHeader = (props) => {
 
                             return {
                                 url: user.photoURL,
-                                name: user.email,
+                                name: user.displayName,
                                 email: user.email,
                                 accessToken: user.accessToken,
                                 unReadMessage: 0,
@@ -126,7 +126,9 @@ const UIHeader = (props) => {
                         placeholder='search'
                         placeholderTextColor="#BEBEBE"
                         value={searchTxt}
-                        onChangeText={(txt) => { setSearchTxt(txt) }} />
+                        onChangeText={(txt) => { setSearchTxt(txt) }} >
+                            {/* {searchTxt} */}
+                        </TextInput>
                 </View>
                 <TouchableOpacity style={styles.btnBox} onPress={search}>
                     <Icon name={rightIconName} size={24} color={'white'} onPress={onPressRightIconName} />

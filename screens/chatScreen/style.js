@@ -39,6 +39,7 @@ const styles = StyleSheet.create({
     width: 50,
     height: 50,
     resizeMode: 'cover',
+    borderRadius: 25,
   },
   boxText: {
     paddingHorizontal: 10,
