@@ -21,9 +21,9 @@ import {
 import messaging from '@react-native-firebase/messaging';
 
 const RegisterScreen = (props) => {
-  const [email, setEmail] = useState('abs123@gmail.com');
-  const [password, setPassword] = useState('Aa12345678@123');
-  const [re_password, setRe_password] = useState('Aa12345678@123');  
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [re_password, setRe_password] = useState('');  
 
   const clickRegister = () => {
     // check email and password if they validate

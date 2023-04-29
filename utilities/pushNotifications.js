@@ -63,11 +63,9 @@ export const getFCMToken = async () => {
         console.log('no data')
       }
     })
-    // console.log('-------------------push notification------------------------')
+
     // if can not get FCM token -> get new token and update 
-
-
-  // Lắng nghe sự kiện thiết bị nhận được token mới
+  // Listen to the event when the device receives a new token
   messaging().onTokenRefresh(token => {
     // const dbRef = firebaseRef(db);
     firebaseSet(firebaseRef(db, `/users/${user.uid}/info`), {
@@ -82,7 +80,7 @@ export const getFCMToken = async () => {
 }
 
 
-// lắng ghe khi có notifications đến
+// listen for incoming notifications
 export const notificationListener = () => {
   requestUserPermission
   messaging().onNotificationOpenedApp(remoteMessage => {
@@ -111,11 +109,10 @@ export const notificationListener = () => {
 
 //---------------------send notification --------------------
 export const onNewMessage = (friendUid, myUID, data, messages) => {
-  // data là dự liệu nhận vào để mở chat screen (tham khảo data nhận vào của UserChat)
-  // messages là tin nhắn khi user gửi tới friend
+  // data is input data to open chat screen (refer to UserChat input data)
+   // messages is the message when the user sends to a friend
   if(myUID === firebaseAut.currentUser.uid){
     const dbRef = firebaseRef(firebaseDatabase);
-    // check item user are in friendRequest list?
     firebaseGet(firebaseChild(dbRef, `users/${friendUid}/info/fcmToken`))
     .then((snapshot) => {
       if (snapshot.exists) {

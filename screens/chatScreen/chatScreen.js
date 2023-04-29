@@ -65,8 +65,6 @@ const ChatScreen = props => {
             
             const user = dataUsers[eachKey].info;
             const isFriend = userFriendList.includes(eachKey)
-            // console.log(isFriend)
-            // cần điều chỉnh phần render ở ScrollView để userChat có thể nhận data
             return {
               url: user.photoURL,
               name: user.displayName,
@@ -119,11 +117,7 @@ const ChatScreen = props => {
                 <TouchableOpacity
                   key={item.userId}
                   style={styles.itemUser}
-                  // onPress={() => alert(JSON.stringify(userList))} 
-                  //{userList : item} là để lấy từng user {userList}, như này thì nó lấy all user dùng alert(JSON.stringify(userList)) để xem
-                  // set cả thẻ <UserChat/> để có thể lấy dc data
                   onPress={() => props.navigation.navigate('Messages', { userList: item })}
-
                 >
                   <UserChat
                     name={item.name}

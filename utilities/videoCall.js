@@ -16,17 +16,9 @@ import { APPID_ZEGOCLOUD, APPSIGN_ZEGOCLOUD } from './config';
 
 const VideoCall = (props) =>{
     const {email, name, url, userId}=props.route.params
-    
-    // useEffect(()=>{
-    //     console.log('====================Video Call screen====================')
-    //     console.log(props.route.params)
-    // })
 
     return (
         <View style={styles.container}>
-            {/* <View style={{backgroundColor: "black"}}>
-                <Text>asdasd</Text>
-            </View> */}
             <ZegoUIKitPrebuiltCall
                 appID={APPID_ZEGOCLOUD}
                 appSign={APPSIGN_ZEGOCLOUD}

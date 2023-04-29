@@ -37,7 +37,6 @@ const styles = StyleSheet.create({
     roomItem: {
         paddingHorizontal: 5,
         backgroundColor: color.background,
-        // backgroundColor: 'yellow',
         flexDirection: 'row',
         marginBottom: 1.5,
       },
@@ -45,6 +44,7 @@ const styles = StyleSheet.create({
         // backgroundColor : 'red',
         paddingHorizontal: 5,
         paddingVertical: 5,
+        
         // flex: 1,
       },
     
@@ -52,6 +52,7 @@ const styles = StyleSheet.create({
         width: 50,
         height: 50,
         resizeMode: 'cover',
+        borderRadius: 25,
       },
       boxText: {
         paddingHorizontal: 10,
@@ -59,22 +60,19 @@ const styles = StyleSheet.create({
         paddingEnd: 10,
         alignItems: 'flex-start',
         flex: 1,
-        // backgroundColor: "green",
+
       },
       roomName: {
         fontWeight: 'bold',
         fontSize: fontSize.h4,
         color: color.black,
-        // backgroundColor: "white",
+
       },
-      message: {
+      lastMessage: {
         color: color.gray,
         width: '100%',
         height: 20,
-        // vấn đề là text dài quá bị xuống hàng, xử lý tạm giới hạn vùng hiển thị
-        // flex: 1,
-        // backgroundColor: "red",
-        // dùng maxWidth để sử lý vấn đề tràn text (chưa làm vì tới h nghĩ) 
+
       },
 
       //=========================================

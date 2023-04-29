@@ -1,0 +1,3 @@
+- Before starting with the command "yarn android", you need to add all the libraries noted in app.js and set up the environment according to the instructions: https://reactnative.dev/docs/environment-setup
+- The video call function is not complete, it only works when both users press "video call" at the "three dot menu" inside the chat.
+- The devices I use are Alcatel 3T8 and Redmi 10c. If you launch the application on some other type of device, some functions may not work or the application may not work.

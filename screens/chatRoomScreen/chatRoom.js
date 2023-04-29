@@ -51,31 +51,18 @@ const ChatRoom = (props) => {
       .then(() => {
         console.log('create room successfully')
       })
-    // console.log(createChatRoom)
     setNameRoom('')
     setVisible(false);
 
   };
 
-  /**
-* cấu trúc chatRoom 
-* {
-* name: 'room name'
-* date: ....
-* ...
-* member: [uid1, uid2,...]
-* }
-* 
-* roomMessages
-* {
-*  }
-*/
 
   useEffect(() => {
     console.log('==================ChatRoom==================')
     firebaseOnValue(firebaseRef(firebaseDatabase, 'ChatRoom'), async (snapshot) => {
       if (snapshot.exists) {
         const data = snapshot.val();
+        // console.log(data)
         const userTypeString = await AsyncStorage.getItem("user")
         const myUID = JSON.parse(userTypeString).uid
         setMyUid(myUID)
@@ -85,7 +72,6 @@ const ChatRoom = (props) => {
           .filter(key => data[key].member.includes(myUID))
           .map(eachKey => {
             const room = data[eachKey];
-            // console.log(room)
             return {
               url: room.url,
               name: room.roomName,

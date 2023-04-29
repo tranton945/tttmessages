@@ -81,7 +81,7 @@ const UserChat = props => {
             isFriend=== true?
             <Text style={styles.userChatName}>{props.name}</Text>
             :
-            <Text style={styles.userChatName}>{props.name} [người lạ]</Text>
+            <Text style={styles.userChatName}>{props.name} [stranger]</Text>
           }          
           {/* substring if the message more 30 character*/}
           <Text style={styles.userChatMessage}>

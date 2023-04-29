@@ -26,8 +26,8 @@ import {
 } from '../../firebase/firebase'
 
 const LoginScreen = props => {
-  const [email, setEmail] = useState('tranton945@gmail.com');
-  const [password, setPassword] = useState('Aa12345678@123');
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
   const [errorEmail, setErrorEmail] = useState('');
   const [errorPassword, setErrorPassword] = useState('');
 
@@ -52,7 +52,7 @@ const LoginScreen = props => {
         await firebaseOnValue(firebaseRef(firebaseDatabase, `users/${user.uid}`), async (snapshot)=> {
           if(snapshot.exists){
             const data = snapshot.val();
-            console.log('=============LoginScreen==============')
+            // console.log('=============LoginScreen==============')
             console.log(data.info.email)
             
             await AsyncStorage.setItem("userData", JSON.stringify(data));
@@ -88,8 +88,7 @@ const LoginScreen = props => {
       style={styles.loginScreen}>
       <View style={styles.loginTitle}>
         <View style={styles.loginTitleBox}>
-          <Text style={styles.loginTitleText}>Wellcome to My App</Text>
-          <Text style={styles.loginTitleText}>Already have an Account?</Text>
+          <Text style={styles.loginTitleText}>TTTMessages</Text>
         </View>
       </View>
 

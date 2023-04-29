@@ -36,12 +36,6 @@ const VideoChat = props => {
         onError={(error) => console.log(error)}
         onLoad={() => setIsLoading(false)}
         />
-      {/* <Video
-        source={{ uri: 'https://www.w3schools.com/html/mov_bbb.mp4' }}
-        style={{ flex: 1 }}
-        resizeMode="cover"
-        onLoad={() => setIsLoading(false)}
-      /> */}
     </View>
   );
 };

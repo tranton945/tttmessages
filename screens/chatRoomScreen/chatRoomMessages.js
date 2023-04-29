@@ -48,9 +48,6 @@ const ChatRoomMessages = props => {
   const [chatHistory, setChatHistory] = useState([])
   const [myUid, setMyUid] = useState('');
 
-  // save photo or video here 
-  const [filePath, setFilePath] = useState({});
-
   // get data from chatRoom
   const { name, roomID} = props.route.params.roomList;
 
@@ -119,11 +116,8 @@ const ChatRoomMessages = props => {
     setVisible(false)  
   };
 
-  //---------------------the problem: calling to firebase 2 times -> set chatHistory 2 times  ----//
   // get messages function
   useEffect(() => {
-    console.log('=================chatRoomMessages================')
-    console.log('Room id: ' + roomID)
     // get data from firebase
     firebaseOnValue(firebaseRef(firebaseDatabase, 'chatRoomMessages/'), async (snapshot) => {
       if (snapshot.exists) {
@@ -137,8 +131,6 @@ const ChatRoomMessages = props => {
         .filter(key => data[key].roomID.includes(roomID))
         .map(eachKey => {
           const roomMessage = data[eachKey];
-          // console.log("roomMessage")
-          // console.log(roomMessage)
           return {
             photoUrl: roomMessage.photoUrl,
             name: roomMessage.displayName,                
@@ -157,8 +149,6 @@ const ChatRoomMessages = props => {
   }, [])
 
   const addNewMember = (uid) => {
-    // alert(uid)
-    // return
     const dbRef = firebaseRef(firebaseDatabase);
     firebaseGet(firebaseChild(dbRef, `ChatRoom/${roomID}`)).then((snapshot) => {
       if (snapshot.exists) {

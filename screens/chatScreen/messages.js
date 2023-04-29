@@ -55,16 +55,16 @@ import {
 const Messages = props => {
   const [txt, setTxt] = useState('')
   const [chatHistory, setChatHistory] = useState([])
-  // latestMessages sử dụng để cập nhật giá trị mới nhất của tin nhắn
-  // thằng onvalue (event listeners) khi re-render screen nó k tự cập nhập lại giá trị của chatHistory
-  // -> nó làm cho khi hàm onvalue đươc gọi thì những giá trị của chatHistory khi user send bị mất
-  // - giá trị của chatHistory khi khởi tạo screen:
+  // latestMessages used to update the latest value of the message
+  // onvalue (event listeners) when rendering the screen it doesn't automatically update the value of chatHistory
+  // -> it causes the onvalue function to be called then the values of chatHistory when user send is lost
+  // - value of chatHistory when initializing screen:
   // [{2},{1}]
-  // - khi thực hiện setChatHistory(newMessage) và dùng một useEffect để kiểm tra giá trị của chatHistory:
+  // - when doing setChatHistory(newMessage) and using a useEffect to check the value of chatHistory:
   // [{3},{2},{1}]
-  // - khi hàm OnValue kích hoạt và log giá trị của chatHistory:
+  // - when the OnValue function fires and logs the value of chatHistory:
   // [{2},{1}]
-  // nên dùng một biến trung gian  
+  // should use an intermediate variable  
   const [latestMessages, setLatestMessages] = useState([]);
   const [keyFriendAndMe, setKeyFriendAndMe] = useState('')
   const [myUid, setMyUid] = useState(firebaseAut.currentUser.uid);
@@ -99,10 +99,6 @@ const Messages = props => {
       />
     )
   }
-  // useEffect(() => {
-  //   console.log('chatHistory')
-  //   console.log(chatHistory)
-  // },[chatHistory])
 
   useEffect(() => {
     setCheckFriend(isFriend)
@@ -121,9 +117,6 @@ const Messages = props => {
 
   // send message function
   const clickSendMessages = async (typeMess, photoMessageURL) => {
-
-    // console.log(keyFriendAndMe.length === 0 )
-    // return
     
     if (txt.trim().length === 0) {
       console.log("no txt")
@@ -135,8 +128,8 @@ const Messages = props => {
 
     const myDataTxt = await AsyncStorage.getItem("userData")
     const userData = JSON.parse(myDataTxt)
-    // user là data cho push notification nên có url
-    // sendMessage k có url là vì url dc sử lý ở local
+    // user is data for push notification so have url
+    // sendMessage has no url because url is processed locally
     const user = {
       name: userData.info.displayName,
       url: userData.info.photoURL,
@@ -176,7 +169,7 @@ const Messages = props => {
     setTxt('')
 
     // send message to firebase wiht id = myUID-friendUID 
-    // user firebasePush to send message
+    // use firebasePush to send message
     if (keyFriendAndMe.length !== 0) {
       firebasePush(firebaseRef(firebaseDatabase, `chats/${keyFriendAndMe}/`), sendMessage)
         .then(() => {
@@ -318,10 +311,10 @@ const Messages = props => {
         const userData = JSON.parse(userDataTypeString)
         const friendUID = userId;
         setMyUid(myUID)
-        // để lọc ra key chứa data của mình và friend thì dùng
+        // To filter out the key containing your data and friends, use
         // filter(key => key.includes(myUID) && key.includes(friendUID))
-        // lúc trước dùng filter(key => key.includes(myUID && friendUID)) -> cách này bị ảnh hưởng bởi thứ tự
-        // trong toán tử && => k nên dùng
+        // before using filter(key => key.includes(myUID && friendUID)) -> this is affected by order
+        // in the && => operator should not be used
         const TempKey = Object.keys(data).filter(key => key.includes(myUID) && key.includes(friendUID))
         setKeyFriendAndMe(TempKey)
       })
@@ -332,12 +325,10 @@ const Messages = props => {
   },[])
  
   // get 20 messages 1 times
-  const [numberOfMessages, setNumberOfMessages] = useState(10)
+  const [numberOfMessages, setNumberOfMessages] = useState(20)
   useEffect(() => {
     if (!dataLoaded) {
-      // default of keyFriendAndMe is '' but after setKeyFriendAndMe(TempKey) log keyFriendAndMe is [] if null
-      // therefore we need to two condition
-      if(keyFriendAndMe === '' || keyFriendAndMe.length === 0){
+      if(keyFriendAndMe === '' || keyFriendAndMe.length === 0 || keyFriendAndMe ===undefined){
         return
       }else{
         setDataLoaded(true);
@@ -373,7 +364,7 @@ const Messages = props => {
           .sort((item1, item2) => item2.timestamp - item1.timestamp)
 
         setChatHistory(getMessageFromFirebase)
-        // sử dụng count để kích hoạt event listeners (update chatHistory khi friend send mess)
+        // use count to trigger event listeners (update chat History when friend sends a message)
         setCount(count+1)
         // console.log(count)
       })
@@ -416,9 +407,6 @@ const Messages = props => {
           type: data[0].type
         }
         setLatestMessages(addNewMessage)
-        // if(addNewMessage.type == "video-call"){
-        //   props.navigation.navigate("Calling", addNewMessage)
-        // }
       })
   },[count])
 
@@ -434,16 +422,15 @@ const Messages = props => {
     if (keyFriendAndMe.length !== 0) {
       firebasePush(firebaseRef(firebaseDatabase, `chats/${keyFriendAndMe}/`), sendMessage)
         .then(() => {
-          // onNewMessage(friendUID, myUid, user, sendMessage)
           console.log('send message successfully')
         })
     } else {
       firebasePush(firebaseRef(firebaseDatabase, `chats/${myUid}-${friendUID}/`), sendMessage)
         .then(() => {
-          // onNewMessage(friendUID, myUid, user, sendMessage)
           console.log('send message successfully')
         })
     }    
+    // call to videoCall.js
     props.navigation.navigate("VideoCall", props.route.params.userList)
     setVisible(false);
   }

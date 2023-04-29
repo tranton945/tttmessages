@@ -1,4 +1,3 @@
-// npm install -g react-native-cli
 // npm install @react-navigation/native
 // npm install @react-navigation/native-stack
 // npm i react-native-screens
@@ -20,32 +19,6 @@
 // yarn add @zegocloud/zego-uikit-prebuilt-call-rn@3.0.0-beta.1
 // yarn add @zegocloud/zego-uikit-rn react-delegate-component zego-express-engine-reactnative@3.2.0 react-native-sound @notifee/react-native
 // npm i react-native-sound
-
-
-
-// firebase web
-// const firebaseConfig = {
-//   apiKey: "AIzaSyAhdeCpd7Ub9VXJk456-qzjmYMYQKtIIWQ",
-//   authDomain: "tttmessages-df7f3.firebaseapp.com",
-//   databaseURL: "https://tttmessages-df7f3-default-rtdb.asia-southeast1.firebasedatabase.app",
-//   projectId: "tttmessages-df7f3",
-//   storageBucket: "tttmessages-df7f3.appspot.com",
-//   messagingSenderId: "977662063355",
-//   appId: "1:977662063355:web:ae96ef8bcf6be9c67f765e",
-//   measurementId: "G-V99901FCNH"
-// };
-
-// https://www.youtube.com/watch?v=YZhNUU4_Pjw&list=PLqvQreCiz0zg6KNUiksmuKZRKPAEJANSj&index=10&t=1239s
-// time: 1h
-// time: 1h15p -> create chat room
-// time 1h40p -> search
-
-// https://www.youtube.com/watch?v=k4mjF4sPITE&t=1s
-// time 55p -> upload img
-
-// notifications
-
-
 
 import {View, Text} from 'react-native';
 import React from 'react';

@@ -28,14 +28,6 @@ const ItemMessage = props => {
     // console.log(date);
     return date
   }
-  // useEffect(() => {
-  //   console.log(message)
-  //   console.log(timestamp)
-  //   console.log(isSender)
-  //   console.log(type)
-  //   console.log(imgMessage)
-
-  // })
   const checkSenderMessages = isSender === true ? styles.isSenderMessages : styles.isReceiverMessages;
   return (
     <View
@@ -79,12 +71,6 @@ const ItemMessage = props => {
                         <Text style={styles.itemMessageMessageTxt}>Video Call</Text>
                         <Text style={styles.itemMessageTimestampTxt}>{convertTimestemp()}</Text>
                       </View>
-                      // type === 'video-call' ?
-                      // <View style={styles.typeIsText}>
-                      //   <Text style={styles.itemMessageMessageTxt}>Video Call</Text>
-                      //   <Text style={styles.itemMessageTimestampTxt}>{convertTimestemp()}</Text>
-                      // </View>
-                      // : console.log()
                 }
               </TouchableOpacity>
             </View>
@@ -134,36 +120,6 @@ const ItemMessage = props => {
           </View>
       }
     </View>
-
-    // <View style={styles.testContainer}>
-    //   {
-    //     isSender == false ?
-    //       <View>
-    //         <View>
-    //           <Image
-    //               style={styles.imageAvatar}
-    //               source={{
-    //                 uri: props.photoUrl,
-    //               }}
-    //             />
-    //         </View>
-    //         <View>
-    //           <Text>{UID}</Text>
-    //           <Text>{timestamp}</Text>
-    //           <Text>{message}</Text>
-    //           <Text>{isSender}</Text>
-    //           <Text>{photoUrl}</Text>
-    //         </View>
-    //       </View>
-    //     :
-    //     <View>
-    //       <Text>adasdadasd</Text>
-    //     </View>
-    //   }
-    //   <View>
-    //     <Text>==========================</Text>
-    //   </View>
-    // </View>
   );
 };
 

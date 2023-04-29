@@ -29,8 +29,6 @@ const UIHeader = (props) => {
     const [userList, setUserList] = useState([])
 
     useEffect(() => {
-        // console.log('=====================UIHeader===============')
-
         if (searchHandler == false) {
             setSearchTxt('')
             return
@@ -44,7 +42,6 @@ const UIHeader = (props) => {
                 const userFriendListTxt = await AsyncStorage.getItem("userData")
                 const userFriendList = JSON.parse(userFriendListTxt).friendList
 
-                //   console.log(userFriendList)
                 setUserList(
                     Object.keys(data)
                         // filter to get all user includes userFriendList
@@ -86,7 +83,7 @@ const UIHeader = (props) => {
                 const name = item.name.toUpperCase()
                 const nameSearch = searchTxt.toUpperCase()
                 // if user name include searchTxt
-                // => newData > -1
+                // => name > -1
                 // there for, app just return name the same searchTxt
                 return name.indexOf(nameSearch) > -1
             })

@@ -4,17 +4,14 @@ export const ValidateEmail = (email) => (/^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{
 export const ValidatePhoneNumber = (phoneNumber) => (/^[0-9]{10}$/.test(phoneNumber))
 
 
-// export const ValidatePassword = (password) => (/^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])([a-zA-Z0-9]{8,})$/.test(password))
-
 export const ValidatePassword = (password) => (/^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=.*[!@#\$%\^&\*])([a-zA-Z0-9!@#\$%\^&\*]{8,})$/.test(password))
-// export const ValidatePassword = (password) => (/^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#\$%\^&\*])(?=.{8})$/.test(password))
-    // kết quả trả về là true or false
+
+    // return result is true or false
     // Contain at least 8 characters
     // contain at least 1 number
     // contain at least 1 special character !@#$%^&*
     // contain at least 1 lowercase character (a-z)
     // contain at least 1 uppercase character (A-Z)
     // contains only 0-9a-zA-Z!@#\$%\^&\*
-    //note {8,} là số ký tự nếu k có , thì số ký tự bị cố định là 8
     //https://stackoverflow.com/questions/14850553/javascript-regex-for-password-containing-at-least-8-characters-1-number-1-uppe
     //https://www.thepolyglotdeveloper.com/2015/05/use-regex-to-test-password-strength-in-javascript/
